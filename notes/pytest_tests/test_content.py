@@ -3,7 +3,6 @@ import pytest
 from django.urls import reverse
 from notes.forms import NoteForm
 
-
 @pytest.mark.parametrize(
     # Задаём названия для параметров:
     'parametrized_client, note_in_list',
@@ -44,3 +43,11 @@ def test_pages_contains_form(author_client, name, args):
     assert 'form' in response.context
     # Проверяем, что объект формы относится к нужному классу.
     assert isinstance(response.context['form'], NoteForm)
+
+@pytest.fixture
+def form_data():
+    return {
+        'title': 'Новый заголовок',
+        'text': 'Новый текст',
+        'slug': 'new-slug'
+    }
