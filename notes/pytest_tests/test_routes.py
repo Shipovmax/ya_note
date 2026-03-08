@@ -3,13 +3,25 @@ from django.urls import reverse
 
 import pytest
 
+from pytest_django.asserts import assertRedirects
+
+
 @pytest.mark.parametrize(
-    'name',  # Имя параметра функции.
-    # Значения, которые будут передаваться в name.
-    ('notes:home', 'users:login', 'users:logout', 'users:signup')
+    'name, args',
+    (
+        ('notes:detail', pytest.lazy_fixture('slug_for_args')),
+        ('notes:edit', pytest.lazy_fixture('slug_for_args')),
+        ('notes:delete', pytest.lazy_fixture('slug_for_args')),
+        ('notes:add', None),
+        ('notes:success', None),
+        ('notes:list', None),
+    ),
 )
-# Указываем имя изменяемого параметра в сигнатуре теста.
-def test_pages_availability_for_anonymous_user(client, name):
-    url = reverse(name)  # Получаем ссылку на нужный адрес.
-    response = client.get(url)  # Выполняем запрос.
-    assert response.status_code == HTTPStatus.OK
+# Передаём в тест анонимный клиент, name проверяемых страниц и args:
+def test_redirects(client, name, args):
+    login_url = reverse('users:login')
+    # Теперь не надо писать никаких if и можно обойтись одним выражением.
+    url = reverse(name, args=args)
+    expected_url = f'{login_url}?next={url}'
+    response = client.get(url)
+    assertRedirects(response, expected_url)
