@@ -7,27 +7,27 @@ from .models import Note
 
 
 class Home(generic.TemplateView):
-    """Домашняя страница."""
+    """Home page."""
     template_name = 'notes/home.html'
 
 
 class NoteSuccess(LoginRequiredMixin, generic.TemplateView):
-    """Страница успешного выполнения операции."""
+    """Operation success page."""
     template_name = 'notes/success.html'
 
 
 class NoteBase(LoginRequiredMixin):
-    """Базовый класс для остальных CBV."""
+    """Base class for other CBVs."""
     model = Note
     success_url = reverse_lazy('notes:success')
 
     def get_queryset(self):
-        """Пользователь может работать только со своими заметками."""
+        """User can only work with their own notes."""
         return self.model.objects.filter(author=self.request.user)
 
 
 class NoteCreate(NoteBase, generic.CreateView):
-    """Добавление заметки."""
+    """Add a note."""
     template_name = 'notes/form.html'
     form_class = NoteForm
 
@@ -39,21 +39,21 @@ class NoteCreate(NoteBase, generic.CreateView):
 
 
 class NoteUpdate(NoteBase, generic.UpdateView):
-    """Редактирование заметки."""
+    """Edit a note."""
     template_name = 'notes/form.html'
     form_class = NoteForm
 
 
 class NoteDelete(NoteBase, generic.DeleteView):
-    """Удаление заметки."""
+    """Delete a note."""
     template_name = 'notes/delete.html'
 
 
 class NotesList(NoteBase, generic.ListView):
-    """Список всех заметок пользователя."""
+    """List of all user notes."""
     template_name = 'notes/list.html'
 
 
 class NoteDetail(NoteBase, generic.DetailView):
-    """Заметка подробно."""
+    """Note detail view."""
     template_name = 'notes/detail.html'

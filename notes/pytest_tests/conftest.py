@@ -1,51 +1,52 @@
 import pytest
 
-# Импортируем класс клиента.
+# Import the client class.
 from django.test.client import Client
 
-# Импортируем модель заметки, чтобы создать экземпляр.
+# Import the note model to create an instance.
 from notes.models import Note
 
 
 @pytest.fixture
-# Используем встроенную фикстуру для модели пользователей django_user_model.
+# Use the built-in fixture for the django_user_model.
 def author(django_user_model):
-    return django_user_model.objects.create(username='Автор')
+    return django_user_model.objects.create(username='Author')
 
 
 @pytest.fixture
 def not_author(django_user_model):
-    return django_user_model.objects.create(username='Не автор')
+    return django_user_model.objects.create(username='Not Author')
 
 
 @pytest.fixture
-def author_client(author):  # Вызываем фикстуру автора.
-    # Создаём новый экземпляр клиента, чтобы не менять глобальный.
+def author_client(author):  # Call the author fixture.
+    # Create a new client instance to avoid changing the global one.
     client = Client()
-    client.force_login(author)  # Логиним автора в клиенте.
+    client.force_login(author)  # Log in the author to the client.
     return client
 
 
 @pytest.fixture
 def not_author_client(not_author):
     client = Client()
-    client.force_login(not_author)  # Логиним обычного пользователя в клиенте.
+    client.force_login(not_author)  # Log in a regular user to the client.
     return client
 
 
 @pytest.fixture
 def note(author):
-    note = Note.objects.create(  # Создаём объект заметки.
-        title='Заголовок',
-        text='Текст заметки',
+    note = Note.objects.create(  # Create a note object.
+        title='Title',
+        text='Note text',
         slug='note-slug',
         author=author,
     )
     return note
 
+
 @pytest.fixture
-# Фикстура запрашивает другую фикстуру создания заметки.
+# Fixture requests another note creation fixture.
 def slug_for_args(note):
-    # И возвращает кортеж, который содержит slug заметки.
-    # На то, что это кортеж, указывает запятая в конце выражения.
+    # And returns a tuple containing the note slug.
+    # The comma at the end indicates that it is a tuple.
     return (note.slug,)

@@ -1,27 +1,26 @@
 from django.conf import settings
 from django.db import models
-
-from pytils.translit import slugify
+from django.utils.text import slugify
 
 
 class Note(models.Model):
     title = models.CharField(
-        'Заголовок',
+        'Title',
         max_length=100,
-        default='Название заметки',
-        help_text='Дайте короткое название заметке'
+        default='Note title',
+        help_text='Give a short title to the note'
     )
     text = models.TextField(
-        'Текст',
-        help_text='Добавьте подробностей'
+        'Text',
+        help_text='Add details'
     )
     slug = models.SlugField(
-        'Адрес для страницы с заметкой',
+        'Slug for the note page',
         max_length=100,
         unique=True,
         blank=True,
-        help_text=('Укажите адрес для страницы заметки. Используйте только '
-                   'латиницу, цифры, дефисы и знаки подчёркивания')
+        help_text=('Provide a slug for the note page. Use only '
+                   'Latin letters, numbers, hyphens and underscores')
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,

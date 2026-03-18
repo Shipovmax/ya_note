@@ -1,4 +1,3 @@
-from http import HTTPStatus
 from django.urls import reverse
 
 import pytest
@@ -17,10 +16,10 @@ from pytest_django.asserts import assertRedirects
         ('notes:list', None),
     ),
 )
-# Передаём в тест анонимный клиент, name проверяемых страниц и args:
+# Pass anonymous client, page names and args to the test:
 def test_redirects(client, name, args):
     login_url = reverse('users:login')
-    # Теперь не надо писать никаких if и можно обойтись одним выражением.
+    # No need for "if" statements, a single expression is enough.
     url = reverse(name, args=args)
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)

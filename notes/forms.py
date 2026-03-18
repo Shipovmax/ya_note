@@ -1,22 +1,21 @@
-from pytils.translit import slugify
-
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 
 from .models import Note
 
-WARNING = ' - такой slug уже существует, придумайте уникальное значение!'
+WARNING = ' - this slug already exists, choose a unique value!'
 
 
 class NoteForm(forms.ModelForm):
-    """Форма для создания или обновления заметки."""
+    """Form for creating or updating a note."""
 
     class Meta:
         model = Note
         fields = ('title', 'text', 'slug')
 
     def clean_slug(self):
-        """Обрабатывает случай, если slug не уникален."""
+        """Handle case where slug is not unique."""
         cleaned_data = super().clean()
         slug = cleaned_data.get('slug')
         if not slug:

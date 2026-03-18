@@ -3,51 +3,54 @@ import pytest
 from django.urls import reverse
 from notes.forms import NoteForm
 
+
 @pytest.mark.parametrize(
-    # Задаём названия для параметров:
+    # Define parameter names:
     'parametrized_client, note_in_list',
     (
-        # Передаём фикстуры в параметры при помощи "ленивых фикстур":
+        # Pass fixtures as parameters using "lazy fixtures":
         (pytest.lazy_fixture('author_client'), True),
         (pytest.lazy_fixture('not_author_client'), False),
     )
 )
 def test_notes_list_for_different_users(
-        # Используем фикстуру заметки и параметры из декоратора:
+        # Use the note fixture and parameters from the decorator:
         note, parametrized_client, note_in_list
 ):
     url = reverse('notes:list')
-    # Выполняем запрос от имени параметризованного клиента:
+    # Execute the request on behalf of the parameterized client:
     response = parametrized_client.get(url)
     object_list = response.context['object_list']
-    # Проверяем истинность утверждения "заметка есть в списке":
+    # Verify the statement "note is in the list":
     assert (note in object_list) is note_in_list
 
+
 @pytest.mark.parametrize(
-    # В качестве параметров передаём name и args для reverse.
+    # Pass name and args for reverse as parameters.
     'name, args',
     (
-        # Для тестирования страницы создания заметки
-        # никакие дополнительные аргументы для reverse() не нужны.
+        # No additional arguments are needed for reverse()
+        # to test the note creation page.
         ('notes:add', None),
-        # Для тестирования страницы редактирования заметки нужен slug заметки.
+        # Testing the note editing page requires the note's slug.
         ('notes:edit', pytest.lazy_fixture('slug_for_args'))
     )
 )
 def test_pages_contains_form(author_client, name, args):
-    # Формируем URL.
+    # Build the URL.
     url = reverse(name, args=args)
-    # Запрашиваем нужную страницу:
+    # Request the specified page:
     response = author_client.get(url)
-    # Проверяем, есть ли объект формы в словаре контекста:
+    # Check if the form object is in the context dictionary:
     assert 'form' in response.context
-    # Проверяем, что объект формы относится к нужному классу.
+    # Verify the form object belongs to the correct class.
     assert isinstance(response.context['form'], NoteForm)
+
 
 @pytest.fixture
 def form_data():
     return {
-        'title': 'Новый заголовок',
-        'text': 'Новый текст',
+        'title': 'New title',
+        'text': 'New text',
         'slug': 'new-slug'
     }
