@@ -1,51 +1,82 @@
 # YaNote
 
-YaNote is a simple Django-based web application for managing personal notes. It allows users to create, view, edit, and delete their notes with ease.
+A Django note-taking app with full CRUD, auto-slug generation, and a pytest test suite covering routes and content isolation.
+
+---
 
 ## Features
 
-- **Note Management**: Create, view, update, and delete notes.
-- **User Authentication**: Secure sign-up, login, and logout functionality.
-- **Access Control**: Users can only see and manage their own notes.
-- **Slug Generation**: Automatic URL-friendly slug generation for note titles.
+- **Note CRUD** — create, read, update, delete via Django CBVs
+- **Auth-gated** — all note operations require login (`LoginRequiredMixin`); unauthenticated requests redirect to login
+- **Author isolation** — `get_queryset` filters by `request.user`; users only see and modify their own notes
+- **Auto-slug** — `Note.save()` auto-generates slug from title via `slugify` if left blank; unique constraint enforced
+- **Slug validation** — `NoteForm.clean_slug()` raises `ValidationError` on duplicate slugs
+- **Registration** — built-in Django auth views for sign up / login / logout
+
+---
 
 ## Tech Stack
 
-- **Framework**: [Django 3.x](https://www.djangoproject.com/)
-- **Database**: SQLite3
-- **Testing**: [Pytest-Django](https://pytest-django.readthedocs.io/en/latest/)
-- **CSS**: Bootstrap
+| | |
+|---|---|
+| Language | Python 3 |
+| Framework | Django 3.2 |
+| Testing | pytest, pytest-django, pytest-lazy-fixture, pytest-subtests |
+| Linting | flake8, flake8-docstrings, pep8-naming |
 
-## Installation
+---
 
-1. Clone the repository:
-   ```bash
-   git clone <repository_url>
-   cd ya_note
-   ```
+## Quick Start
 
-2. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+git clone https://github.com/Shipovmax/ya_note
+cd ya_note
 
-3. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
 
-4. Start the development server:
-   ```bash
-   python manage.py runserver
-   ```
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+---
 
 ## Running Tests
 
-To run the project's tests, use `pytest`:
 ```bash
 pytest
 ```
 
-## License
+| Test file | Coverage |
+|-----------|---------|
+| `test_routes.py` | Redirect behaviour for anonymous users on all protected URLs |
+| `test_content.py` | Note list isolation per user; form presence on add/edit pages |
 
-This project is for educational purposes.
+---
+
+## Project Structure
+
+```
+ya_note/
+├── notes/
+│   ├── models.py       # Note model with auto-slug
+│   ├── views.py        # CBVs: Home, List, Detail, Create, Update, Delete
+│   ├── forms.py        # NoteForm with slug validation
+│   ├── urls.py
+│   └── pytest_tests/
+│       ├── conftest.py
+│       ├── test_routes.py
+│       └── test_content.py
+├── templates/
+│   ├── notes/
+│   └── registration/
+└── yanote/             # Django settings and root URLs
+```
+
+---
+
+## Author
+
+- GitHub: [Shipovmax](https://github.com/Shipovmax)
+- Email: shipov.max@icloud.com
